@@ -1,0 +1,61 @@
+.container {
+    width: auto;
+    padding-top: 15px;
+}
+
+.blacklistPanel {
+    background: white;
+    color: black;
+    border-top: 1px solid #ccc;
+}
+
+.blacklistPanel.fixed {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+.blacklistPanel .panel-title em {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: block;
+}
+
+.blacklistPanel .css-claim-text {
+    margin-bottom: 20px;
+}
+
+.carousel-control.left,
+.carousel-control.right {
+    background: none;
+}
+
+.glyphicon-chevron-left::before {
+    color: #a94442;
+    content: "<";
+}
+
+.glyphicon-chevron-right::before {
+    color: #a94442;
+    content: ">";
+}
+
+.carousel-indicators {
+    bottom: 5px;
+}
+
+.carousel-indicators li {
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
+}
+
+.panel {
+    margin-bottom: 30px;
+}
