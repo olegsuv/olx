@@ -1,17 +1,12 @@
 /**
  * Created by olegsuv on 18.11.2018.
  */
-class ListUpdater {
-    // noinspection JSMethodCanBeStatic
-    getTDValueByLabel (response, label, parse = true) {
-        const details = $(response).find('.details');
-        const th = details.find('th:contains(' + label + ')');
-        const td = th.next();
-        const text = td.text().trim();
-        return parse ? parseFloat(text) : text;
+class ListUpdater extends Utils {
+    getCadastralNumber() {
+        return null;
     }
 
-    getCadastralNumber() {
+    processCadastralNumber() {
     }
 
     getSize() {
@@ -27,6 +22,7 @@ class ListUpdater {
     }
 
     constructor() {
+        super();
         this.ajaxLoads = 0;
         this.localStorageLoads = 0;
         this.modified = 0;
@@ -35,12 +31,6 @@ class ListUpdater {
     init() {
         this.startLoads();
         this.listenBackground();
-    }
-
-    isLocalStorageDataValid(url) {
-        return localStorage.getItem(url)
-            && !!JSON.parse(localStorage.getItem(url)).size
-            && !!JSON.parse(localStorage.getItem(url)).description
     }
 
     startLoads() {
@@ -62,7 +52,7 @@ class ListUpdater {
 
     listenBackground() {
         chrome.runtime.onMessage.addListener((msg) => {
-            if (msg === 'url-update' && !this.isWorking) {
+            if (msg === 'url-update') {
                 this.startLoads();
             }
         });
@@ -86,11 +76,14 @@ class ListUpdater {
         const size = this.getSize(response);
         const description = $(response).find('#textContent').text().trim();
         const cadastralNumber = this.getCadastralNumber(response);
-        localStorage.setItem(url, JSON.stringify({
+        let storageItem = {
             size,
             description,
-            cadastralNumber
-        }));
+        };
+        if (cadastralNumber) {
+            storageItem.cadastralNumber = cadastralNumber
+        }
+        localStorage.setItem(url, JSON.stringify(storageItem));
         this.modifyDOM(element, size, description, cadastralNumber);
     }
 
@@ -109,11 +102,6 @@ class ListUpdater {
         return $(`<br /><span class="list-updater-label list-updater-label-${className}">${text}</span>`);
     }
 
-    getCadastralNode(cadastralNumber) {
-        const link = 'https://newmap.land.gov.ua/?cadnum=' + escape(cadastralNumber);
-        return $(`<br /><a href="${link}" target="_blank"><span class="list-updater-label list-updater-label-cadastralNumber">${cadastralNumber}</span></a>`);
-    }
-
     getCurrentPrice(element) {
         const priceSelector = '.price strong';
         const priceArray = $(element).find(priceSelector).text().match(/\d/ig);
@@ -125,12 +113,6 @@ class ListUpdater {
         const text = this.getTextForLink(size);
         const node = this.getNode(text, 'size');
         $(element).find(linkSelector).attr('title', description).append(node);
-    }
-
-    processCadastralNumber(element, cadastralNumber) {
-        const linkSelector = '.link.detailsLink';
-        const node = this.getCadastralNode(cadastralNumber);
-        $(element).find(linkSelector).after(node);
     }
 
     processPrice(element, size) {

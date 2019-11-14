@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "Olx Улучшения",
     "description": "Выводит дополнительные сведения из объявлений на страницу поиска.",
-    "version": "5.6",
+    "version": "5.7",
     "background": {
         "scripts": ["js/background.js"],
         "persistent": false
@@ -13,7 +13,7 @@
         "256": "images/olx_256.png"
     },
     "page_action": {
-        "default_icon": "images/ic_local_library_black_24dp_2x.png"
+        "default_icon": "images/olx_24.png"
     },
     "permissions": [
         "tabs",
@@ -27,6 +27,7 @@
             ],
             "js": [
                 "vendors/jquery.min.js",
+                "js/utils.js",
                 "js/base.js",
                 "js/land.js",
                 "js/flat.js"

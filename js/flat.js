@@ -11,17 +11,11 @@ class Flat extends ListUpdater {
     }
 
     getForEachText(size, currentPrice, currentCurrency) {
-        const currentPricePerSize = parseInt(currentPrice / size, 10);
-        const currentPricePerSizeText = currentPricePerSize.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-        const isLowPrice = currentCurrency === '$' && currentPrice < 10000;
-        return isLowPrice ? null : `<span>за м²</span> ${currentPricePerSizeText} ${currentCurrency}`;
+        return this.getPriceForUnit(size, currentPrice, currentCurrency, 'за м²');
     }
 
     getForAllText(size, currentPrice, currentCurrency) {
-        const currentPriceForAll = parseInt(currentPrice * size, 10);
-        const currentPriceForAllText = currentPriceForAll.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-        const isHighPrice = currentCurrency === '$' && currentPrice > 10000;
-        return isHighPrice ? null : `<span>за все</span> ${currentPriceForAllText} ${currentCurrency}`;
+        return this.getPriceForAll(size, currentPrice, currentCurrency, 'за все');
     }
 }
 
