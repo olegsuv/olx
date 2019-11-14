@@ -130,7 +130,6 @@ class ListUpdater {
     processCadastralNumber(element, cadastralNumber) {
         const linkSelector = '.link.detailsLink';
         const node = this.getCadastralNode(cadastralNumber);
-        console.log(cadastralNumber, node);
         $(element).find(linkSelector).after(node);
     }
 
