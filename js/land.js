@@ -1,11 +1,14 @@
 /**
  * Created by olegsuv on 17.11.2018.
  */
-import {getTDValueByLabel} from './common'
 
 class Land extends ListUpdater {
+    getCadastralNumber(response) {
+        return this.getTDValueByLabel(response, 'Кадастровый номер', false) || null
+    }
+
     getSize(response) {
-        getTDValueByLabel(response, 'соток', true)
+        return this.getTDValueByLabel(response, 'Площадь участка') || 1
     }
 
     getTextForLink(size) {

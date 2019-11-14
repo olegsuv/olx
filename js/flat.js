@@ -3,15 +3,7 @@
  */
 class Flat extends ListUpdater {
     getSize(response) {
-        const description = $(response).find('.descriptioncontent');
-        const th = description.find('th');
-        for (let i = 0; i < th.length; i++) {
-            let text = th[i].innerText.trim();
-            if (text.indexOf('Общая площадь') !== -1) {
-                let td = th.eq(i).next().find('strong').text();
-                return parseInt(td.split(' ')[0], 10);
-            }
-        }
+        return this.getTDValueByLabel(response, 'Общая площадь');
     }
 
     getTextForLink(size) {
