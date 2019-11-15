@@ -2,20 +2,24 @@
  * Created by olegsuv on 19.11.2018.
  */
 class Flat extends ListUpdater {
-    getSize(response) {
-        return this.getTDValueByLabel(response, 'Общая площадь');
+    onAjaxGetSuccess(response, element, url) {
+        const size = this.getTDValueByLabel(response, 'Общая площадь') || 1;
+        const description = $(response).find('#textContent').text().trim();
+        let storageItem = {
+            size,
+            description,
+        };
+        localStorage.setItem(url, JSON.stringify(storageItem));
     }
 
-    getTextForLink(size) {
-        return `${size} м²`;
+    onReadLocalStorage(element, url) {
+        const {size, description} = JSON.parse(localStorage.getItem(url));
+        this.insertChanges(element, size, description);
     }
 
-    getForEachText(size, currentPrice, currentCurrency) {
-        return this.getPriceForUnit(size, currentPrice, currentCurrency, 'за м²');
-    }
-
-    getForAllText(size, currentPrice, currentCurrency) {
-        return this.getPriceForAll(size, currentPrice, currentCurrency, 'за все');
+    insertChanges(element, size, description) {
+        this.insertPricePerSizeNode(element, size, 'за м²');
+        this.insertSizeNode(element, size, description, 'м²');
     }
 }
 

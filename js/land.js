@@ -3,6 +3,32 @@
  */
 
 class Land extends ListUpdater {
+    onAjaxGetSuccess(response, element, url) {
+        const size = this.getTDValueByLabel(response, 'Площадь участка') || 1;
+        const description = $(response).find('#textContent').text().trim();
+        const cadastralNumber = this.getCadastralNumber(response);
+        let storageItem = {
+            size,
+            description,
+        };
+        if (cadastralNumber) {
+            storageItem.cadastralNumber = cadastralNumber
+        }
+        localStorage.setItem(url, JSON.stringify(storageItem));
+    }
+
+    onReadLocalStorage(element, url) {
+        const {size, description, cadastralNumber} = JSON.parse(localStorage.getItem(url));
+        this.insertChanges(element, size, description, cadastralNumber);
+    }
+
+    insertChanges(element, size, description, cadastralNumber) {
+        this.insertPricePerSizeNode(element, size, 'за сотку');
+        this.insertPriceForAllNode(element, size, 'за все');
+        this.insertSizeNode(element, size, description, 'соток');
+        cadastralNumber && this.insertCadastralNumberNode(element, this.getProcessedCadastralNumberNode(element, cadastralNumber));
+    }
+
     getCadastralNumber(response) {
         return this.getTDValueByLabel(response, 'Кадастровый номер', false) || null
     }
@@ -12,7 +38,7 @@ class Land extends ListUpdater {
         return $(`<br /><a href="${link}" target="_blank"><span class="list-updater-label list-updater-label-cadastralNumber">${cadastralNumber}</span></a>`);
     }
 
-    processCadastralNumber(element, cadastralNumber) {
+    getProcessedCadastralNumberNode(element, cadastralNumber) {
         const cadastralRegexp = new RegExp(/\d{10}:\d{2}:\d{3}:\d{4}/g);
         const cadastralFailedRegexp = new RegExp(/\d{19}/g);
         if (!cadastralRegexp.test(cadastralNumber)) {
@@ -25,25 +51,7 @@ class Land extends ListUpdater {
                 cadastralNumber = null
             }
         }
-        const linkSelector = '.link.detailsLink';
-        const node = this.getCadastralNode(cadastralNumber);
-        cadastralNumber && $(element).find(linkSelector).after(node);
-    }
-
-    getSize(response) {
-        return this.getTDValueByLabel(response, 'Площадь участка') || 1
-    }
-
-    getTextForLink(size) {
-        return `${size} соток`;
-    }
-
-    getForEachText(size, currentPrice, currentCurrency) {
-        return this.getPriceForUnit(size, currentPrice, currentCurrency, 'за сотку');
-    }
-
-    getForAllText(size, currentPrice, currentCurrency) {
-        return this.getPriceForAll(size, currentPrice, currentCurrency, 'за все');
+        return this.getCadastralNode(cadastralNumber);
     }
 }
 
