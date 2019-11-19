@@ -1,8 +1,8 @@
 {
   "name": "olx",
-  "version": "5.6",
-  "description": "OLX enhancements",
-  "main": "index.js",
+  "version": "5.8",
+  "description": "OLX Property Viewer",
+  "main": "js/base.js",
   "scripts": {},
   "author": "Oleh Suvorov",
   "license": "ISC"
