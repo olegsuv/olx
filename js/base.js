@@ -2,25 +2,30 @@
  * Created by olegsuv on 18.11.2018.
  */
 class ListUpdater extends Utils {
-    onAjaxGetSuccess() {}
-    onReadLocalStorage() {}
+    onAjaxGetSuccess() {
+    }
+
+    onReadLocalStorage() {
+    }
 
     reset() {
         this.ajaxLoads = 0;
         this.localStorageLoads = 0;
         this.modified = 0;
+        this.isWorking = false;
+        this.workingUrl = '';
     }
 
     init() {
+        this.reset();
         this.startLoads();
         this.listenBackground();
     }
 
     startLoads() {
-        this.reset();
         this.isWorking = true;
+        this.workingUrl = location.href;
         this.offers = $('.listHandler .offer:not(".listUpdated")');
-        this.offers.addClass('listUpdated');
         this.offers.each((index, element) => {
             let href = $(element).find('.link.detailsLink').attr('href');
             let url = href && href.split('#')[0];
@@ -36,7 +41,10 @@ class ListUpdater extends Utils {
 
     listenBackground() {
         chrome.runtime.onMessage.addListener((msg) => {
-            if (msg === 'url-update') {
+            // console.log('listenBackground', this.workingUrl, location.href, this.offers.length, this.modified, this.isWorking);
+            if (msg === 'url-update' && this.workingUrl !== location.href) {
+                console.log('listenBackground start new load: ', location.href);
+                this.reset();
                 this.startLoads();
             }
         });
@@ -44,11 +52,7 @@ class ListUpdater extends Utils {
 
     checkLoads() {
         this.modified++;
-        if (this.offers.length === this.modified) {
-            console.log(`localStorageLoads: ${this.localStorageLoads}, ajaxLoads: ${this.ajaxLoads}`);
-            this.isWorking = false;
-            this.modified = 0;
-        }
+        this.offers.length === this.modified && this.reset()
     }
 
     readLocalStorage(element, url) {
@@ -61,7 +65,7 @@ class ListUpdater extends Utils {
         this.checkLoads()
     }
 
-    static ajaxGetFail(response) {
+    ajaxGetFail(response) {
         console.log('fail', response);
     }
 }

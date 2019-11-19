@@ -41,10 +41,6 @@ class Utils {
             .after(this.getNode(`<br>${size} ${sizeText}`, 'size'));
     }
 
-    insertCadastralNumberNode(element, node) {
-        $(element).find('.link.detailsLink').after(node);
-    }
-
     isLocalStorageDataValid(url) {
         return localStorage.getItem(url)
             && !!JSON.parse(localStorage.getItem(url)).size

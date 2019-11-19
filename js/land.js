@@ -6,7 +6,7 @@ class Land extends ListUpdater {
     onAjaxGetSuccess(response, element, url) {
         const size = this.getTDValueByLabel(response, 'Площадь участка') || 1;
         const description = $(response).find('#textContent').text().trim();
-        const cadastralNumber = this.getCadastralNumber(response);
+        const cadastralNumber = this.getTDValueByLabel(response, 'Кадастровый номер', false) || null;
         let storageItem = {
             size,
             description,
@@ -15,22 +15,26 @@ class Land extends ListUpdater {
             storageItem.cadastralNumber = cadastralNumber
         }
         localStorage.setItem(url, JSON.stringify(storageItem));
+        this.insertChanges(element, size, description, cadastralNumber);
     }
 
     onReadLocalStorage(element, url) {
         const {size, description, cadastralNumber} = JSON.parse(localStorage.getItem(url));
         this.insertChanges(element, size, description, cadastralNumber);
+        $(element).addClass('listUpdated');
+    }
+
+    insertCadastralNumberNode(element, cadastralNumber) {
+        const checkedCadastralNumber = this.getProcessedCadastralNumberNode(element, cadastralNumber);
+        checkedCadastralNumber && $(element).find('.link.detailsLink').after(this.getCadastralNode(checkedCadastralNumber));
     }
 
     insertChanges(element, size, description, cadastralNumber) {
         this.insertPricePerSizeNode(element, size, 'за сотку');
         this.insertPriceForAllNode(element, size, 'за все');
         this.insertSizeNode(element, size, description, 'соток');
-        cadastralNumber && this.insertCadastralNumberNode(element, this.getProcessedCadastralNumberNode(element, cadastralNumber));
-    }
-
-    getCadastralNumber(response) {
-        return this.getTDValueByLabel(response, 'Кадастровый номер', false) || null
+        this.insertCadastralNumberNode(element, cadastralNumber);
+        $(element).addClass('listUpdated');
     }
 
     getCadastralNode(cadastralNumber) {
@@ -51,7 +55,7 @@ class Land extends ListUpdater {
                 cadastralNumber = null
             }
         }
-        return this.getCadastralNode(cadastralNumber);
+        return cadastralNumber;
     }
 }
 
