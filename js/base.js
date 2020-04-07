@@ -41,7 +41,6 @@ class ListUpdater extends Utils {
 
     listenBackground() {
         chrome.runtime.onMessage.addListener((msg) => {
-            // console.log('listenBackground', this.workingUrl, location.href, this.offers.length, this.modified, this.isWorking);
             if (msg === 'url-update' && this.workingUrl !== location.href) {
                 console.log('listenBackground start new load: ', location.href);
                 this.reset();

@@ -1,7 +1,7 @@
 /**
  * Created by olegsuv on 19.11.2018.
  */
-class Commercial extends ListUpdater {
+class Flat extends ListUpdater {
     onAjaxGetSuccess(response, element, url) {
         const size = this.getTDValueByLabel(response, 'Общая площадь') || 1;
         const description = $(response).find('#textContent').text().trim();
@@ -21,14 +21,14 @@ class Commercial extends ListUpdater {
 
     insertChanges(element, size, description) {
         this.insertPricePerSizeNode(element, size, 'за м²');
+        this.insertPriceForAllNode(element, size, 'за все');
         this.insertSizeNode(element, size, description, 'м²');
         $(element).addClass('listUpdated');
     }
 }
 
-const flatMask = 'https://www.olx.ua/nedvizhimost/kvartiry-komnaty/';
-const houseMask = 'https://www.olx.ua/nedvizhimost/doma/prodazha-domov/';
-if (location.href.indexOf(flatMask) !== -1 || location.href.indexOf(houseMask) !== -1) {
-    const flat = new Commercial();
+const commercialMask = 'https://www.olx.ua/nedvizhimost/kommercheskaya-nedvizhimost/';
+if (location.href.indexOf(commercialMask) !== -1) {
+    const flat = new Flat();
     flat.init();
 }

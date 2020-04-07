@@ -27,12 +27,13 @@ class Utils {
     }
 
     insertPriceForAllNode(element, size, text) {
+        const currentPriceLimit = 5000;
         const currentPrice = this.getCurrentPrice(element);
         const currentCurrency = $('.currencySelector .selected').text();
         const currentPriceForAll = parseInt(currentPrice * size, 10);
         const currentPriceForAllText = currentPriceForAll.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
         const node = this.getNode(`<br><span>${text}</span> ${currentPriceForAllText} ${currentCurrency}`, 'price-for-all');
-        $(element).find('.price').append(node)
+        currentPrice < currentPriceLimit && $(element).find('.price').append(node)
     }
 
     insertSizeNode(element, size, description, sizeText) {
