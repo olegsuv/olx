@@ -59,8 +59,8 @@ class Land extends ListUpdater {
     }
 }
 
-const landMask = 'https://www.olx.ua/nedvizhimost/zemlya/';
-if (location.href.indexOf(landMask) !== -1) {
+const landMask = '/nedvizhimost/zemlya/';
+if (location.href.search(landMask) !== -1) {
     const land = new Land();
     land.init();
 }

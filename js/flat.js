@@ -26,9 +26,9 @@ class Commercial extends ListUpdater {
     }
 }
 
-const flatMask = 'https://www.olx.ua/nedvizhimost/kvartiry-komnaty/';
-const houseMask = 'https://www.olx.ua/nedvizhimost/doma/prodazha-domov/';
-if (location.href.indexOf(flatMask) !== -1 || location.href.indexOf(houseMask) !== -1) {
+const flatMask = '/nedvizhimost/kvartiry-komnaty/';
+const houseMask = '/nedvizhimost/doma/prodazha-domov/';
+if (location.href.search(flatMask) !== -1 || location.href.search(houseMask) !== -1) {
     const flat = new Commercial();
     flat.init();
 }

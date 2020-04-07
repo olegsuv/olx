@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "OLX Property Viewer",
     "description": "Выводит дополнительные сведения из объявлений на страницу поиска",
-    "version": "5.9",
+    "version": "5.10",
     "background": {
         "scripts": ["js/background.js"],
         "persistent": false
@@ -17,14 +17,12 @@
     },
     "permissions": [
         "tabs",
-        "https://www.olx.ua/obyavlenie/*",
-        "https://www.olx.ua/nedvizhimost/*"
+        "https://www.olx.ua/*"
     ],
     "content_scripts": [
         {
             "matches": [
-                "https://www.olx.ua/obyavlenie/*",
-                "https://www.olx.ua/nedvizhimost/*"
+                "https://www.olx.ua/*"
             ],
             "js": [
                 "vendors/jquery.min.js",

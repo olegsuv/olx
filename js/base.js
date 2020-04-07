@@ -12,18 +12,24 @@ class ListUpdater extends Utils {
         this.ajaxLoads = 0;
         this.localStorageLoads = 0;
         this.modified = 0;
-        this.isWorking = false;
         this.workingUrl = '';
     }
 
     init() {
         this.reset();
+        // this.cleanupLocalStorage();
         this.startLoads();
         this.listenBackground();
     }
 
+    cleanupLocalStorage() {
+        console.log('cleanupLocalStorage');
+        Object.keys(localStorage)
+            .filter((key) => key.search('olx.ua') === -1 && key.search('google') === -1)
+            .map((key) => localStorage.removeItem(key))
+    }
+
     startLoads() {
-        this.isWorking = true;
         this.workingUrl = location.href;
         this.offers = $('.listHandler .offer:not(".listUpdated")');
         this.offers.each((index, element) => {
