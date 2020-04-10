@@ -47,5 +47,4 @@ class Utils {
             && !!JSON.parse(localStorage.getItem(url)).size
             && !!JSON.parse(localStorage.getItem(url)).description
     }
-
 }

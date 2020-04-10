@@ -2,14 +2,16 @@
  * Created by olegsuv on 18.11.2018.
  */
 class ListUpdater extends Utils {
-    onAjaxGetSuccess() {
+    //Override inside page class
+    onFetchSuccess() {
     }
 
+    //Override inside page class
     onReadLocalStorage() {
     }
 
     reset() {
-        this.ajaxLoads = 0;
+        this.fetchLoads = 0;
         this.localStorageLoads = 0;
         this.modified = 0;
         this.workingUrl = '';
@@ -17,21 +19,13 @@ class ListUpdater extends Utils {
 
     init() {
         this.reset();
-        // this.cleanupLocalStorage();
         this.startLoads();
         this.listenBackground();
     }
 
-    cleanupLocalStorage() {
-        console.log('cleanupLocalStorage');
-        Object.keys(localStorage)
-            .filter((key) => key.search('olx.ua') === -1 && key.search('google') === -1)
-            .map((key) => localStorage.removeItem(key))
-    }
-
     startLoads() {
         this.workingUrl = location.href;
-        this.offers = $('.listHandler .offer:not(".listUpdated")');
+        this.offers = $('.listHandler .wrap .offer:not(".listUpdated")');
         this.offers.each((index, element) => {
             let href = $(element).find('.link.detailsLink').attr('href');
             let url = href && href.split('#')[0];
@@ -39,10 +33,45 @@ class ListUpdater extends Utils {
                 this.localStorageLoads++;
                 this.readLocalStorage(element, url);
             } else {
-                this.ajaxLoads++;
-                $.get(url, (response) => this.ajaxGetSuccess(response, element, url)).fail(this.ajaxGetFail);
+                this.fetchLoads++;
+                this.fetchUrl(url, element);
             }
         });
+    }
+
+    checkLoads() {
+        this.modified++;
+        if (this.offers.length === this.modified) {
+            console.log(`Loading finished: 
+                working URL: ${this.workingUrl},
+                fetch loads ${this.fetchLoads},
+                localStorage loads ${this.localStorageLoads}`);
+            this.reset()
+        }
+    }
+
+    handleErrors(response) {
+        if (!response.ok) {
+            throw Error('fetchUrl handleErrors: ' + response.statusText);
+        }
+        return response;
+    }
+
+    handleSuccess(response, element, url) {
+        this.onFetchSuccess(...arguments);
+        this.checkLoads()
+    }
+
+    fetchUrl(url, element) {
+        fetch(url)
+            .then(this.handleErrors)
+            .then((response) => this.handleSuccess(response, element, url))
+            .catch(error => console.log('fetchUrl error', error))
+    }
+
+    readLocalStorage(element, url) {
+        this.onReadLocalStorage(element, url);
+        this.checkLoads()
     }
 
     listenBackground() {
@@ -53,24 +82,5 @@ class ListUpdater extends Utils {
                 this.startLoads();
             }
         });
-    }
-
-    checkLoads() {
-        this.modified++;
-        this.offers.length === this.modified && this.reset()
-    }
-
-    readLocalStorage(element, url) {
-        this.onReadLocalStorage(element, url);
-        this.checkLoads()
-    }
-
-    ajaxGetSuccess(response, element, url) {
-        this.onAjaxGetSuccess(...arguments);
-        this.checkLoads()
-    }
-
-    ajaxGetFail(response) {
-        console.log('fail', response);
     }
 }

@@ -2,7 +2,7 @@
  * Created by olegsuv on 19.11.2018.
  */
 class Commercial extends ListUpdater {
-    onAjaxGetSuccess(response, element, url) {
+    onFetchSuccess(response, element, url) {
         const size = this.getTDValueByLabel(response, 'Общая площадь') || 1;
         const description = $(response).find('#textContent').text().trim();
         let storageItem = {
