@@ -57,21 +57,22 @@ class ListUpdater extends Utils {
         return response;
     }
 
-    handleSuccess(response, element, url) {
-        this.onFetchSuccess(...arguments);
-        this.checkLoads()
+    handleSuccess(response) {
+        this.checkLoads();
+        return response.text();
     }
 
     fetchUrl(url, element) {
         fetch(url)
             .then(this.handleErrors)
             .then((response) => this.handleSuccess(response, element, url))
+            .then((html) => this.onFetchSuccess(html, element, url))
             .catch(error => console.log('fetchUrl error', error))
     }
 
     readLocalStorage(element, url) {
         this.onReadLocalStorage(element, url);
-        this.checkLoads()
+        this.checkLoads();
     }
 
     listenBackground() {

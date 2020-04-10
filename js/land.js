@@ -3,16 +3,20 @@
  */
 
 class Land extends ListUpdater {
-    async onFetchSuccess(response, element, url) {
-        const size = this.getTDValueByLabel(response, 'Площадь участка') || 1;
-        const description = $(response).find('#textContent').text().trim();
-        const cadastralNumber = this.getTDValueByLabel(response, 'Кадастровый номер', false) || null;
+    async onFetchSuccess(text, element, url) {
+        const size = this.getTDValueByLabel(text, 'Площадь участка') || null;
+        const description = $(text).find('#textContent').text().trim() || null;
+        const cadastralNumber = this.getTDValueByLabel(text, 'Кадастровый номер', false) || null;
+        if (!size || !description) {
+            console.error('onFetchSuccess error', size, description, url, text)
+        }
         let storageItem = {
             size,
             description,
         };
-        if (cadastralNumber) {
-            const processedCadastralNumber = this.getProcessedCadastralNumberNode(cadastralNumber);
+        if (cadastralNumber || this.extractCadastralNumber(description)) {
+            const processedCadastralNumber = this.extractCadastralNumber(cadastralNumber)
+                || this.extractCadastralNumber(description);
             if (processedCadastralNumber) {
                 storageItem.cadastralNumber = processedCadastralNumber;
                 const coordsWGS84 = await this.getWGS84Coords(processedCadastralNumber);
@@ -28,8 +32,8 @@ class Land extends ListUpdater {
     async onReadLocalStorage(element, url) {
         const storageItem = JSON.parse(localStorage.getItem(url));
         const {cadastralNumber, coordsWGS84} = storageItem;
-        const processedCadastralNumber = this.getProcessedCadastralNumberNode(cadastralNumber);
         if (cadastralNumber && !coordsWGS84) {
+            const processedCadastralNumber = this.extractCadastralNumber(cadastralNumber);
             const coordsWGS84 = await this.getWGS84Coords(processedCadastralNumber);
             localStorage.setItem(url, JSON.stringify(...storageItem, coordsWGS84));
         }
@@ -59,7 +63,7 @@ class Land extends ListUpdater {
 
     async insertGoogleMapLinkNode(element, coordsWGS84) {
         if (!coordsWGS84 || !coordsWGS84.x || !coordsWGS84.y) {
-            console.log('insertGoogleMapLinkNode error:', element, coordsWGS84);
+            console.error('insertGoogleMapLinkNode error:', element, coordsWGS84);
             return false
         }
         const locationName = $(element).find('.breadcrumb.x-normal i[data-icon="location-filled"]').eq(0).parent().text();
@@ -84,26 +88,36 @@ class Land extends ListUpdater {
                 y: json.data.st_y
             }
         } else {
-            console.log(cadastralNumber + " - ошибка HTTP: " + response.status);
+            console.error(cadastralNumber + " - ошибка HTTP: " + response.status);
             return false
         }
     }
 
-    getProcessedCadastralNumberNode(cadastralNumber) {
+    extractCadastralNumber(text) {
         const cadastralRegexp = new RegExp(/\d{10}:\d{2}:\d{3}:\d{4}/g);
-        const cadastralFailedRegexp = new RegExp(/\d{19}/g);
-        if (!cadastralRegexp.test(cadastralNumber)) {
-            console.log('getProcessedCadastralNumberNode fail', cadastralNumber);
-            if (cadastralFailedRegexp.test(cadastralNumber)) {
-                cadastralNumber = cadastralNumber.substr(0, 10) + ':' +
-                    cadastralNumber.substr(10, 2) + ':' +
-                    cadastralNumber.substr(12, 3) + ':' +
-                    cadastralNumber.substr(15, 4)
-            } else {
-                cadastralNumber = null
+        if (cadastralRegexp.test(text)) {
+            //only first number for now
+            return text.match(cadastralRegexp)[0]
+        } else {
+            const cadastralRegexpNoDots = new RegExp(/\d{19}/g);
+            const cadastralRegexpDots = new RegExp(/\d{10}.\d{2}.\d{3}.\d{4}/g);
+            const cadastralRegexpSemi = new RegExp(/\d{10};\d{2};\d{3};\d{4}/g);
+            let cadastralNumber = null;
+            if (cadastralRegexpNoDots.test(text)) {
+                cadastralNumber = text.match(cadastralRegexpNoDots)[0].substr(0, 10) + ':' +
+                    text.substr(10, 2) + ':' +
+                    text.substr(12, 3) + ':' +
+                    text.substr(15, 4)
             }
+            if (cadastralRegexpDots.test(text)) {
+                cadastralNumber = text.match(cadastralRegexpNoDots)[0].replace(/\./g, ':')
+            }
+            if (cadastralRegexpSemi.test(text)) {
+                cadastralNumber = text.match(cadastralRegexpSemi)[0].replace(/;/g, ':')
+            }
+            console.log('extractCadastralNumber processed', text, cadastralNumber);
+            return cadastralNumber
         }
-        return cadastralNumber;
     }
 }
 
