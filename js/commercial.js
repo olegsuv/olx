@@ -1,7 +1,7 @@
 /**
  * Created by olegsuv on 19.11.2018.
  */
-class Flat extends ListUpdater {
+class Commercial extends ListUpdater {
     onFetchSuccess(response, element, url) {
         const size = this.getTDValueByLabel(response, 'Общая площадь') || 1;
         const description = $(response).find('#textContent').text().trim();
@@ -27,8 +27,8 @@ class Flat extends ListUpdater {
     }
 }
 
-const commercialMask = 'https://www.olx.ua/nedvizhimost/kommercheskaya-nedvizhimost/';
+const commercialMask = '/nedvizhimost/kommercheskaya-nedvizhimost/';
 if (location.href.indexOf(commercialMask) !== -1) {
-    const flat = new Flat();
-    flat.init();
+    const commercial = new Commercial();
+    commercial.init();
 }

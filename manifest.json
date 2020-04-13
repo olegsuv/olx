@@ -2,10 +2,9 @@
     "manifest_version": 2,
     "name": "OLX Property Viewer",
     "description": "Выводит дополнительные сведения из объявлений на страницу поиска",
-    "version": "5.13",
+    "version": "5.17",
     "background": {
-        "scripts": ["js/background.js"],
-        "persistent": false
+        "scripts": ["js/background.js"]
     },
     "icons": {
         "24": "images/olx_24.png",
@@ -17,7 +16,10 @@
     },
     "permissions": [
         "tabs",
-        "https://www.olx.ua/*"
+        "webRequest",
+        "webRequestBlocking",
+        "https://www.olx.ua/*",
+        "https://map.land.gov.ua/*"
     ],
     "content_scripts": [
         {

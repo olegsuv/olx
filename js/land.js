@@ -7,9 +7,6 @@ class Land extends ListUpdater {
         const size = this.getTDValueByLabel(text, 'Площадь участка') || null;
         const description = $(text).find('#textContent').text().trim() || null;
         const cadastralNumber = this.getTDValueByLabel(text, 'Кадастровый номер', false) || null;
-        if (!size || !description) {
-            console.error('onFetchSuccess error', size, description, url, text)
-        }
         let storageItem = {
             size,
             description,
@@ -21,7 +18,7 @@ class Land extends ListUpdater {
                 storageItem.cadastralNumber = processedCadastralNumber;
                 const coordsWGS84 = await this.getWGS84Coords(processedCadastralNumber);
                 if (coordsWGS84) {
-                    storageItem.coordsWGS84 = coordsWGS84
+                    storageItem.coordsWGS84 = coordsWGS84;
                 }
             }
         }
@@ -35,10 +32,25 @@ class Land extends ListUpdater {
         if (cadastralNumber && !coordsWGS84) {
             const processedCadastralNumber = this.extractCadastralNumber(cadastralNumber);
             const coordsWGS84 = await this.getWGS84Coords(processedCadastralNumber);
-            localStorage.setItem(url, JSON.stringify(...storageItem, coordsWGS84));
+            localStorage.setItem(url, JSON.stringify({...storageItem, coordsWGS84}));
         }
         this.insertChanges(element, storageItem);
         $(element).addClass('listUpdated');
+    }
+
+    async getWGS84Coords(cadastralNumber) {
+        try {
+            let response = await fetch('https://map.land.gov.ua/mapi/find-parcel?cadnum=' + escape(cadastralNumber) + '&activeArchLayer=0');
+            if (response.ok) {
+                let json = await response.json();
+                return {
+                    x: json.data.st_x,
+                    y: json.data.st_y
+                }
+            }
+        } catch (error) {
+            console.error('getWGS84Coords', error)
+        }
     }
 
     insertChanges(element, storageItem) {
@@ -63,7 +75,7 @@ class Land extends ListUpdater {
 
     async insertGoogleMapLinkNode(element, coordsWGS84) {
         if (!coordsWGS84 || !coordsWGS84.x || !coordsWGS84.y) {
-            console.error('insertGoogleMapLinkNode error:', element, coordsWGS84);
+            console.error('insertGoogleMapLinkNode error', element, coordsWGS84);
             return false
         }
         const locationName = $(element).find('.breadcrumb.x-normal i[data-icon="location-filled"]').eq(0).parent().text();
@@ -77,20 +89,6 @@ class Land extends ListUpdater {
                 </span>
             </a>`;
         $(element).find('.link.detailsLink').after(link);
-    }
-
-    async getWGS84Coords(cadastralNumber) {
-        let response = await fetch('https://map.land.gov.ua/mapi/find-parcel?cadnum=' + escape(cadastralNumber) + '&activeArchLayer=0');
-        if (response.ok) {
-            let json = await response.json();
-            return {
-                x: json.data.st_x,
-                y: json.data.st_y
-            }
-        } else {
-            console.error(cadastralNumber + " - ошибка HTTP: " + response.status);
-            return false
-        }
     }
 
     extractCadastralNumber(text) {
@@ -115,7 +113,6 @@ class Land extends ListUpdater {
             if (cadastralRegexpSemi.test(text)) {
                 cadastralNumber = text.match(cadastralRegexpSemi)[0].replace(/;/g, ':')
             }
-            console.log('extractCadastralNumber processed', text, cadastralNumber);
             return cadastralNumber
         }
     }
