@@ -18,6 +18,9 @@ class Utils {
     }
 
     insertPricePerSizeNode(element, size, text) {
+        if ($(element).hasClass('listUpdated')) {
+            return false
+        }
         const currentPrice = this.getCurrentPrice(element);
         const currentCurrency = $('.currencySelector .selected').text();
         const currentPricePerSize = parseInt(currentPrice / size, 10);
@@ -27,6 +30,9 @@ class Utils {
     }
 
     insertPriceForAllNode(element, size, text) {
+        if ($(element).hasClass('listUpdated')) {
+            return false
+        }
         const currentPriceLimit = 5000;
         const currentPrice = this.getCurrentPrice(element);
         const currentCurrency = $('.currencySelector .selected').text();
@@ -37,6 +43,9 @@ class Utils {
     }
 
     insertSizeNode(element, size, description, sizeText) {
+        if ($(element).hasClass('listUpdated')) {
+            return false
+        }
         $(element).find('.link.detailsLink')
             .attr('title', description)
             .after(this.getNode(`<br>${size} ${sizeText}`, 'size'));

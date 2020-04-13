@@ -2,6 +2,14 @@
  * Created by olegsuv on 18.11.2018.
  */
 class ListUpdater extends Utils {
+    log(...args) {
+        this.config.logs && console.log('OLX Property Viewer Log', ...args)
+    }
+
+    error(...args) {
+        this.config.logs && console.error('OLX Property Viewer Error', ...args)
+    }
+
     //Override inside page class
     onFetchSuccess() {
     }
@@ -14,17 +22,15 @@ class ListUpdater extends Utils {
         this.fetchLoads = 0;
         this.localStorageLoads = 0;
         this.modified = 0;
-        this.workingUrl = '';
     }
 
     init() {
+        this.config = {};
         this.reset();
-        this.startLoads();
         this.listenBackground();
     }
 
     startLoads() {
-        this.workingUrl = location.href;
         this.offers = $('.listHandler .wrap .offer:not(".listUpdated")');
         this.offers.each((index, element) => {
             let href = $(element).find('.link.detailsLink').attr('href');
@@ -42,17 +48,18 @@ class ListUpdater extends Utils {
     checkLoads() {
         this.modified++;
         if (this.offers.length === this.modified) {
-            console.log(`Loading finished: 
-                working URL: ${this.workingUrl},
-                fetch loads ${this.fetchLoads},
-                localStorage loads ${this.localStorageLoads}`);
+            this.log(`Loading finished: 
+                working URL: ${this.config.url},
+                total loads: ${this.offers.length},
+                fetch loads ${this.fetchLoads} (${parseInt(this.fetchLoads / this.offers.length * 100, 10)}%),
+                localStorage loads ${this.localStorageLoads} (${parseInt(this.localStorageLoads / this.offers.length * 100, 10)}%)`);
             this.reset()
         }
     }
 
     handleErrors(response) {
         if (!response.ok) {
-            throw Error('fetchUrl handleErrors: ' + response.statusText);
+            this.error('fetchUrl handleErrors', response.statusText);
         }
         return response;
     }
@@ -67,7 +74,7 @@ class ListUpdater extends Utils {
             .then(this.handleErrors)
             .then((response) => this.handleSuccess(response, element, url))
             .then((html) => this.onFetchSuccess(html, element, url))
-            .catch(error => console.log('fetchUrl error', error))
+            .catch(error => this.error('fetchUrl error', error))
     }
 
     readLocalStorage(element, url) {
@@ -76,10 +83,14 @@ class ListUpdater extends Utils {
     }
 
     listenBackground() {
-        chrome.runtime.onMessage.addListener((msg) => {
-            if (msg === 'url-update' && this.workingUrl !== location.href) {
-                console.log('listenBackground start new load: ', location.href);
+        chrome.runtime.onMessage.addListener((message) => {
+            if (message.hasOwnProperty('logs')) {
+                this.config.logs = message.logs;
+            }
+            if (this.config.url !== message.url) {
+                this.log('Start new load:', message.url);
                 this.reset();
+                this.config.url = message.url;
                 this.startLoads();
             }
         });

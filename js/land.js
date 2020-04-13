@@ -49,7 +49,7 @@ class Land extends ListUpdater {
                 }
             }
         } catch (error) {
-            console.error('getWGS84Coords', error)
+            this.log('getWGS84Coords', error)
         }
     }
 
@@ -75,7 +75,7 @@ class Land extends ListUpdater {
 
     async insertGoogleMapLinkNode(element, coordsWGS84) {
         if (!coordsWGS84 || !coordsWGS84.x || !coordsWGS84.y) {
-            console.error('insertGoogleMapLinkNode error', element, coordsWGS84);
+            this.error('insertGoogleMapLinkNode error', element, coordsWGS84);
             return false
         }
         const locationName = $(element).find('.breadcrumb.x-normal i[data-icon="location-filled"]').eq(0).parent().text();
@@ -108,7 +108,7 @@ class Land extends ListUpdater {
                     text.substr(15, 4)
             }
             if (cadastralRegexpDots.test(text)) {
-                cadastralNumber = text.match(cadastralRegexpNoDots)[0].replace(/\./g, ':')
+                cadastralNumber = text.match(cadastralRegexpDots)[0].replace(/\./g, ':')
             }
             if (cadastralRegexpSemi.test(text)) {
                 cadastralNumber = text.match(cadastralRegexpSemi)[0].replace(/;/g, ':')

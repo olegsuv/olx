@@ -70,7 +70,7 @@
                 renderData(data);
             },
             error: function (json) {
-                console.log('error', json);
+                this.log('error', json);
             }
         });
     }
@@ -88,7 +88,7 @@
                 renderData(data);
             },
             error: function (json) {
-                console.log('error', json);
+                this.log('error', json);
             }
         });
     }
