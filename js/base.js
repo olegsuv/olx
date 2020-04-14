@@ -87,6 +87,9 @@ class ListUpdater extends Utils {
             if (message.hasOwnProperty('logs')) {
                 this.config.logs = message.logs;
             }
+            if (message.hasOwnProperty('cadastralHidden')) {
+                this.config.cadastralHidden = message.cadastralHidden;
+            }
             if (this.config.url !== message.url) {
                 this.log('Start new load:', message.url);
                 this.reset();

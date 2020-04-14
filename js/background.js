@@ -4,7 +4,8 @@
 
 //https://github.com/balvin-perrie/Access-Control-Allow-Origin---Unblock/blob/master/background.js
 let preferences = {
-    logs: false
+    logs: false,
+    cadastralHidden: false,
 };
 
 const cors = {};
@@ -42,7 +43,7 @@ chrome.webRequest.onHeadersReceived.addListener(cors.onHeadersReceived, {
 chrome.runtime.onInstalled.addListener(function () {
     chrome.storage.sync.get('logs', (result) => {
         if (result.hasOwnProperty('logs')) {
-            preferences = result;
+            preferences.logs = result.logs;
         }
         chrome.contextMenus.create({
             title: 'Enable logs in console',
@@ -52,10 +53,22 @@ chrome.runtime.onInstalled.addListener(function () {
             checked: preferences.logs
         });
     });
+    chrome.storage.sync.get('cadastralHidden', (result) => {
+        if (result.hasOwnProperty('cadastralHidden')) {
+            preferences.cadastralHidden = result.cadastralHidden;
+        }
+        chrome.contextMenus.create({
+            title: 'Hide lands without cadastral',
+            type: 'checkbox',
+            id: 'cadastralHidden',
+            contexts: ['page_action'],
+            checked: preferences.cadastralHidden
+        });
+    });
 });
 
 chrome.contextMenus.onClicked.addListener((menuItem, tab) => {
-    preferences.logs = menuItem.checked;
+    preferences[menuItem.menuItemId] = menuItem.checked;
     chrome.storage.sync.set(preferences);
     chrome.tabs.sendMessage(tab.id, preferences);
 });
@@ -65,7 +78,7 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo) {
         chrome.tabs.sendMessage(tabId, {url: changeInfo.url, ...preferences});
     }
     if (changeInfo.status === 'complete') {
-        chrome.tabs.get(1077, (result) =>
+        chrome.tabs.get(tabId, (result) =>
             chrome.tabs.sendMessage(tabId, {url: result.url, ...preferences})
         );
     }

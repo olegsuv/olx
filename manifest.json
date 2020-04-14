@@ -2,13 +2,14 @@
     "manifest_version": 2,
     "name": "OLX Property Viewer",
     "description": "Выводит дополнительные сведения из объявлений на страницу поиска",
-    "version": "5.18",
+    "version": "5.19",
     "background": {
         "scripts": ["js/background.js"]
     },
     "icons": {
         "24": "images/olx_24.png",
         "64": "images/olx_64.png",
+        "128": "images/olx_128.png",
         "256": "images/olx_256.png"
     },
     "page_action": {

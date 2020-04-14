@@ -55,6 +55,10 @@ class Land extends ListUpdater {
 
     insertChanges(element, storageItem) {
         const {size, description, cadastralNumber, coordsWGS84} = storageItem;
+        if (this.config.cadastralHidden && !cadastralNumber) {
+            $(element).hide();
+            return false;
+        }
         this.insertPricePerSizeNode(element, size, 'за сотку');
         this.insertPriceForAllNode(element, size, 'за все');
         this.insertSizeNode(element, size, description, 'соток');
