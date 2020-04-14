@@ -123,8 +123,4 @@ class Land extends ListUpdater {
 }
 
 const landMask = '/nedvizhimost/zemlya/';
-if (location.href.search(landMask) !== -1) {
-    const land = new Land();
-    land.init();
-}
-
+checkInit([landMask], Land);

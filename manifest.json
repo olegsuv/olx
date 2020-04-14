@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "OLX Property Viewer",
     "description": "Выводит дополнительные сведения из объявлений на страницу поиска",
-    "version": "5.19",
+    "version": "5.20",
     "background": {
         "scripts": ["js/background.js"]
     },
@@ -33,6 +33,7 @@
                 "vendors/jquery.min.js",
                 "js/utils.js",
                 "js/base.js",
+                "js/building.js",
                 "js/land.js",
                 "js/flat.js",
                 "js/commercial.js"

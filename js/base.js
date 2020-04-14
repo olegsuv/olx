@@ -90,12 +90,19 @@ class ListUpdater extends Utils {
             if (message.hasOwnProperty('cadastralHidden')) {
                 this.config.cadastralHidden = message.cadastralHidden;
             }
-            if (this.config.url !== message.url) {
+            if (message.url && this.config.url !== message.url) {
                 this.log('Start new load:', message.url);
                 this.reset();
                 this.config.url = message.url;
                 this.startLoads();
             }
         });
+    }
+}
+
+function checkInit(masks, ModuleClass) {
+    if (masks.some((mask) => location.href.search(mask) !== -1)) {
+        const module = new ModuleClass();
+        module.init();
     }
 }
