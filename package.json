@@ -1,6 +1,6 @@
 {
   "name": "olx",
-  "version": "5.18",
+  "version": "5.21",
   "description": "OLX Property Viewer",
   "main": "js/base.js",
   "scripts": {},
