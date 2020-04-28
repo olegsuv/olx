@@ -4,9 +4,9 @@
 
 class Land extends ListUpdater {
     async onFetchSuccess(text, element, url) {
-        const size = this.getTDValueByLabel(text, 'Площадь участка') || null;
+        const size = this.getValueByLabel(text, 'Площадь участка') || null;
         const description = $(text).find('#textContent').text().trim() || null;
-        const cadastralNumber = this.getTDValueByLabel(text, 'Кадастровый номер', false) || null;
+        const cadastralNumber = this.getValueByLabel(text, 'Кадастровый номер', false) || null;
         let storageItem = {
             size,
             description,

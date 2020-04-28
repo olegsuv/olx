@@ -1,6 +1,6 @@
 class Building extends ListUpdater {
     onFetchSuccess(response, element, url) {
-        const size = this.getTDValueByLabel(response, 'Общая площадь') || 1;
+        const size = this.getValueByLabel(response, 'Общая площадь') || 1;
         const description = $(response).find('#textContent').text().trim();
         let storageItem = {
             size,

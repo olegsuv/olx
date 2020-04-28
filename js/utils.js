@@ -1,9 +1,9 @@
 class Utils {
-    getTDValueByLabel(response, label, parse = true) {
+    getValueByLabel(response, label, parse = true) {
         const details = $(response).find('.details');
-        const th = details.find('th:contains(' + label + ')');
-        const td = th.next();
-        const text = td.text().trim();
+        const spanHeader = details.find('.offer-details__name:contains(' + label + ')');
+        const spanValue = spanHeader.next();
+        const text = spanValue.text().trim();
         return parse ? parseFloat(text) : text;
     }
 
