@@ -1,6 +1,6 @@
 class Utils {
     getValueByLabel(response, label, parse = true) {
-        const details = $(response).find('.details');
+        const details = $(response).find('.offer-details');
         const spanHeader = details.find('.offer-details__name:contains(' + label + ')');
         const spanValue = spanHeader.next();
         const text = spanValue.text().trim();

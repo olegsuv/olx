@@ -29,7 +29,8 @@ class Land extends ListUpdater {
     async onReadLocalStorage(element, url) {
         const storageItem = JSON.parse(localStorage.getItem(url));
         const {cadastralNumber, coordsWGS84} = storageItem;
-        if (cadastralNumber && !coordsWGS84) {
+        console.log('grecaptcha', typeof grecaptcha);
+        if (grecaptcha && cadastralNumber && !coordsWGS84) {
             const processedCadastralNumber = this.extractCadastralNumber(cadastralNumber);
             const coordsWGS84 = await this.getWGS84Coords(processedCadastralNumber);
             localStorage.setItem(url, JSON.stringify({...storageItem, coordsWGS84}));
@@ -39,18 +40,29 @@ class Land extends ListUpdater {
     }
 
     async getWGS84Coords(cadastralNumber) {
-        try {
-            let response = await fetch('https://map.land.gov.ua/mapi/find-parcel?cadnum=' + escape(cadastralNumber) + '&activeArchLayer=0');
-            if (response.ok) {
-                let json = await response.json();
-                return {
-                    x: json.data.st_x,
-                    y: json.data.st_y
+        grecaptcha && grecaptcha.ready(function () {
+            grecaptcha.execute('6LcAmtkUAAAAAJUwNLMCZACeXK1gEZCQj4cXvSZv', {action: 'homepage'}).then(async function onRecaptchaTokenGet(token) {
+                console.log('onRecaptchaTokenGet', token);
+                try {
+                    let response = await fetch('https://map.land.gov.ua/mapi/find-parcel?cadnum=' +
+                        escape(cadastralNumber) + '&activeArchLayer=0&recaptcha_response=' + token);
+                    if (response.ok) {
+                        let json = await response.json();
+                        return {
+                            x: json.data.st_x,
+                            y: json.data.st_y
+                        }
+                    }
+                } catch (error) {
+                    this.log('getWGS84Coords', error)
                 }
-            }
-        } catch (error) {
-            this.log('getWGS84Coords', error)
-        }
+            });
+        });
+    }
+
+    init() {
+        super.init();
+        $('head').append(`<script type="text/javascript" src="https://www.google.com/recaptcha/api.js?render=6LcAmtkUAAAAAJUwNLMCZACeXK1gEZCQj4cXvSZv"></script>`);
     }
 
     insertChanges(element, storageItem) {
@@ -123,4 +135,10 @@ class Land extends ListUpdater {
 }
 
 const landMask = '/nedvizhimost/zemlya/';
-checkInit([landMask], Land);
+$(document).ready(function () {
+    console.log('ready');
+    $.getScript("https://www.google.com/recaptcha/api.js?render=6LcAmtkUAAAAAJUwNLMCZACeXK1gEZCQj4cXvSZv", function (data, textStatus, jqxhr) {
+        console.log("Load was performed.");
+        checkInit([landMask], Land);
+    });
+});

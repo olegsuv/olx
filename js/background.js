@@ -40,7 +40,7 @@ chrome.webRequest.onHeadersReceived.addListener(cors.onHeadersReceived, {
 
 //Context
 
-chrome.runtime.onInstalled.addListener(function () {
+function insertOptions () {
     chrome.storage.sync.get('logs', (result) => {
         if (result.hasOwnProperty('logs')) {
             preferences.logs = result.logs;
@@ -65,7 +65,10 @@ chrome.runtime.onInstalled.addListener(function () {
             checked: preferences.cadastralHidden
         });
     });
-});
+}
+
+chrome.runtime.onInstalled.addListener(insertOptions);
+chrome.runtime.onStartup.addListener(insertOptions);
 
 chrome.contextMenus.onClicked.addListener((menuItem, tab) => {
     preferences[menuItem.menuItemId] = menuItem.checked;
@@ -74,12 +77,18 @@ chrome.contextMenus.onClicked.addListener((menuItem, tab) => {
 });
 
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo) {
-    if (changeInfo.url) {
+    if (changeInfo && changeInfo.url) {
         chrome.tabs.sendMessage(tabId, {url: changeInfo.url, ...preferences});
     }
-    if (changeInfo.status === 'complete') {
+    if (changeInfo && changeInfo.status === 'complete') {
         chrome.tabs.get(tabId, (result) =>
             chrome.tabs.sendMessage(tabId, {url: result.url, ...preferences})
         );
     }
+});
+
+chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    $.get("https://www.google.com/recaptcha/api.js?render=6LcAmtkUAAAAAJUwNLMCZACeXK1gEZCQj4cXvSZv", function(result) {
+        chrome.tabs.executeScript(tabs[0].id, {code: result});
+    }, "text");
 });
