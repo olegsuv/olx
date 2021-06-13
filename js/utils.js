@@ -1,10 +1,13 @@
 class Utils {
-    getValueByLabel(response, label, parse = true) {
-        const details = $(response).find('.details');
-        const spanHeader = details.find('.offer-details__name:contains(' + label + ')');
-        const spanValue = spanHeader.next();
-        const text = spanValue.text().trim();
-        return parse ? parseFloat(text) : text;
+    getValueByLabel(dom, label, parse = true) {
+        console.log('getValueByLabel', label, parse, dom);
+        const metricsObject = dom.querySelectorAll('ul li p');
+        const metricsArray = Array.from(metricsObject);
+        const filteredMetrics = metricsArray.filter(metricNode => metricNode.innerText.indexOf(label) !== -1);
+        const requiredMetricText = filteredMetrics[0].innerText;
+        const regExpDigits = /\d+/;
+        const value = regExpDigits.exec(requiredMetricText)[0];
+        return parse ? parseFloat(value) : value;
     }
 
     getNode(text, className) {

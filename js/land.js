@@ -39,8 +39,18 @@ class Land extends ListUpdater {
     }
 
     async getWGS84Coords(cadastralNumber) {
+        const postData = {
+            cadastre: cadastralNumber,
+        };
         try {
-            let response = await fetch('https://map.land.gov.ua/mapi/find-parcel?cadnum=' + escape(cadastralNumber) + '&activeArchLayer=0');
+            let response = await fetch('https://brok.land/api/v1/proxy/elandpov-info-by-cadastre/', {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(postData)
+            });
             if (response.ok) {
                 let json = await response.json();
                 return {
@@ -69,9 +79,11 @@ class Land extends ListUpdater {
 
     insertCadastralNumberNode(element, cadastralNumber) {
         const link = `<br />
-            <a href="https://newmap.land.gov.ua/?cadnum=${escape(cadastralNumber)}" target="_blank">
+            <a href="https://brok.land/?cadnum=${cadastralNumber}" target="_blank">
                 <span class="list-updater-label list-updater-label-cadastralNumber">
-                    Кадастровая карта: ${cadastralNumber}
+                    <div class="brok-land-logo">
+                        ${cadastralNumber}
+                    </div>
                 </span>
             </a>`;
         $(element).find('.link.detailsLink').after(link);
