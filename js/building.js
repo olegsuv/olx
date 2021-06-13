@@ -11,7 +11,6 @@ class Building extends ListUpdater {
         // var docArticle = doc.querySelector('article').innerHTML;
 
         const size = this.getValueByLabel(dom, 'Общая площадь');
-        console.log('onFetchSuccess', size, url);
         if (!size) return;
         const description = $(dom).find('#textContent').text().trim();
         let storageItem = {

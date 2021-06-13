@@ -32,7 +32,6 @@ class ListUpdater extends Utils {
 
     startLoads() {
         this.offers = $('.listHandler .wrap .offer:not(".listUpdated")');
-        console.log('startLoads', this.offers);
         this.offers.each((index, element) => {
             let href = $(element).find('.link.detailsLink').attr('href');
             let url = href && href.split('#')[0];
@@ -48,7 +47,6 @@ class ListUpdater extends Utils {
 
     checkLoads() {
         this.modified++;
-        console.log('checkLoads', this.modified);
         if (this.offers.length === this.modified) {
             this.log(`Loading finished: 
                 working URL: ${this.config.url},
@@ -72,7 +70,6 @@ class ListUpdater extends Utils {
     }
 
     fetchUrl(url, element) {
-        console.log('fetchUrl', element);
         fetch(url)
             .then(this.handleErrors)
             .then((response) => this.handleSuccess(response, element, url))
@@ -104,9 +101,7 @@ class ListUpdater extends Utils {
 }
 
 function checkInit(masks, ModuleClass) {
-    console.log('checkInit 1', masks)
     if (masks.some((mask) => location.href.search(mask) !== -1)) {
-        console.log('checkInit 2', masks)
         const module = new ModuleClass();
         module.init();
     }

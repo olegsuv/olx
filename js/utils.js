@@ -1,6 +1,5 @@
 class Utils {
     getValueByLabel(dom, label, parse = true) {
-        console.log('getValueByLabel', label, parse, dom);
         const metricsObject = dom.querySelectorAll('ul li p');
         const metricsArray = Array.from(metricsObject);
         const filteredMetrics = metricsArray.filter(metricNode => metricNode.innerText.indexOf(label) !== -1);
