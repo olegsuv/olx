@@ -5,5 +5,8 @@
   "main": "js/base.js",
   "scripts": {},
   "author": "Oleh Suvorov",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "prettier": "2.3.2"
+  }
 }

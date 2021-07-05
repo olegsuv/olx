@@ -3,6 +3,5 @@
  */
 class Flat extends Building {}
 
-const flatMask = '/nedvizhimost/kvartiry-komnaty/';
-const houseMask = '/nedvizhimost/doma/';
-checkInit([flatMask, houseMask], Flat);
+const flatMask = "/nedvizhimost/kvartiry-komnaty/";
+checkInit([flatMask], Flat);
