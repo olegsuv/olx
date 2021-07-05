@@ -56,9 +56,4 @@ class Utils {
       .attr("title", description)
       .after(this.getNode(`<br>${size} ${sizeText}`, "size"));
   }
-
-  isLocalStorageDataValid(url) {
-    const item = localStorage.getItem(url);
-    return item && JSON.parse(item).size;
-  }
 }

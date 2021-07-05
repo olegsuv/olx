@@ -31,9 +31,10 @@ class ListUpdater extends Utils {
   startLoads() {
     this.offers = $('.listHandler .wrap .offer:not(".listUpdated")');
     this.offers.each((index, element) => {
-      let href = $(element).find(".link.detailsLink").attr("href");
-      let url = href && href.split("#")[0];
-      if (this.isLocalStorageDataValid(url)) {
+      const href = $(element).find(".link.detailsLink").attr("href");
+      const url = href && href.split("#")[0];
+      const item = localStorage.getItem(url);
+      if (item) {
         this.localStorageLoads++;
         this.readLocalStorage(element, url);
       } else {
