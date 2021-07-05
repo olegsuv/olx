@@ -7,27 +7,25 @@ class House extends Building {
     const dom = parser.parseFromString(html, "text/html");
     const buildingSize = this.getValueByLabel(dom, "Общая площадь");
     const groundSize = this.getValueByLabel(dom, "Площадь участка");
-    const description = $(dom).find("#textContent").text().trim();
     const storageItem = {
       buildingSize,
       groundSize,
-      description,
     };
     localStorage.setItem(url, JSON.stringify(storageItem));
-    this.insertChanges(element, ...storageItem);
+    this.insertChanges(element, buildingSize, groundSize);
   }
 
   onReadLocalStorage(element, url) {
-    const { buildingSize, groundSize, description } = JSON.parse(
-      localStorage.getItem(url)
-    );
-    this.insertChanges(element, buildingSize, groundSize, description);
+    const { buildingSize, groundSize } = JSON.parse(localStorage.getItem(url));
+    this.insertChanges(element, buildingSize, groundSize);
     $(element).addClass("listUpdated");
   }
 
-  insertChanges(element, buildingSize, groundSize, description) {
-    this.insertPricePerSizeNode(element, size, "за м²");
-    this.insertSizeNode(element, size, description, "м²");
+  insertChanges(element, buildingSize, groundSize) {
+    this.insertPricePerSizeNode(element, buildingSize, "за м²");
+    this.insertSizeNode(element, buildingSize, null, "м²");
+    this.insertPricePerSizeNode(element, groundSize, "за сотку");
+    this.insertSizeNode(element, groundSize, null, "соток");
     $(element).addClass("listUpdated");
   }
 }

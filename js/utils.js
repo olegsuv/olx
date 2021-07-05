@@ -22,9 +22,6 @@ class Utils {
   }
 
   insertPricePerSizeNode(element, size, text) {
-    if ($(element).hasClass("listUpdated")) {
-      return false;
-    }
     const currentPrice = this.getCurrentPrice(element);
     const currentCurrency = $(".currencySelector .selected").text();
     const currentPricePerSize = parseInt(currentPrice / size, 10);
@@ -39,9 +36,6 @@ class Utils {
   }
 
   insertPriceForAllNode(element, size, text) {
-    if ($(element).hasClass("listUpdated")) {
-      return false;
-    }
     const currentPriceLimit = 5000;
     const currentPrice = this.getCurrentPrice(element);
     const currentCurrency = $(".currencySelector .selected").text();
@@ -57,9 +51,6 @@ class Utils {
   }
 
   insertSizeNode(element, size, description, sizeText) {
-    if ($(element).hasClass("listUpdated")) {
-      return false;
-    }
     $(element)
       .find(".link.detailsLink")
       .attr("title", description)
@@ -67,10 +58,7 @@ class Utils {
   }
 
   isLocalStorageDataValid(url) {
-    return (
-      localStorage.getItem(url) &&
-      !!JSON.parse(localStorage.getItem(url)).size &&
-      !!JSON.parse(localStorage.getItem(url)).description
-    );
+    const item = localStorage.getItem(url);
+    return item && JSON.parse(item).size;
   }
 }
